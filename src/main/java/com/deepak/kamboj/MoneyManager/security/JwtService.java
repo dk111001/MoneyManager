@@ -18,12 +18,12 @@ import java.util.function.Function;
 public class JwtService {
     private static final String SECRET_KEY="33743677397A24432646294A404D635166546A576E5A7234753778214125442A"; //WnZr4u7x
     public String extractUsername(String token){
-        return extractClaim(token,Claims::getSubject);
+        return extractClaim(token, Claims::getSubject);
     }
 
 
     public <T> T extractClaim(String token, Function<Claims, T> claimsResolver){
-        final Claims claims=extractAllClaims(token);
+        final Claims claims = extractAllClaims(token);
         return claimsResolver.apply(claims);
     }
     public String generateToken(UserDetails userDetails){

@@ -3,12 +3,10 @@ package com.deepak.kamboj.MoneyManager.controllers;
 import com.deepak.kamboj.MoneyManager.security.AuthRequest;
 import com.deepak.kamboj.MoneyManager.security.AuthResponse;
 import com.deepak.kamboj.MoneyManager.security.AuthenticationService;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/auth")
@@ -30,5 +28,10 @@ public class AuthController {
         System.out.println("Yoo!");
         System.out.println(ResponseEntity.ok(authenticationService.authenticate(request)));
         return ResponseEntity.ok(authenticationService.authenticate(request));
+    }
+
+    @GetMapping("/user")
+    public String getUser(){
+        return "user";
     }
 }
