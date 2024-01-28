@@ -1,5 +1,9 @@
-package com.deepak.kamboj.MoneyManager.security;
+package com.deepak.kamboj.MoneyManager.security_old;
 
+import com.deepak.kamboj.MoneyManager.exception.CustomException;
+import com.deepak.kamboj.MoneyManager.model.ErrorResponse;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.util.JSONPObject;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.MalformedJwtException;
 import jakarta.servlet.FilterChain;
@@ -7,6 +11,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.boot.web.servlet.error.DefaultErrorAttributes;
 import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -17,6 +22,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.io.PrintWriter;
+
 @Component
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter  {
@@ -31,13 +38,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter  {
             filterChain.doFilter(request,response);
             return;
         }
-        jwt =authHeader.substring(7);
         try {
-            userEmail=jwtService.extractUsername(jwt);  //extract user Email from JWT token
-            if (userEmail !=null && SecurityContextHolder.getContext().getAuthentication() ==null){
-                UserDetails userDetails=this.userDetailsService.loadUserByUsername(userEmail);
-                if (jwtService.isTokenValid(jwt,userDetails)){
-                    UsernamePasswordAuthenticationToken authToken =new UsernamePasswordAuthenticationToken(
+            jwt = authHeader.substring(7);
+            userEmail = jwtService.extractUsername(jwt);  //extract user Email from JWT token
+            if (userEmail != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+                UserDetails userDetails = this.userDetailsService.loadUserByUsername(userEmail);
+                if (jwtService.isTokenValid(jwt, userDetails)) {
+                    UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
                             userDetails,
                             null,
                             userDetails.getAuthorities()
@@ -50,9 +57,20 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter  {
 
                 }
             }
-        } catch (MalformedJwtException e) {
-            handleTokenExpiredException(e);
-            throw e;
+        }
+        catch (CustomException ex) {;
+            SecurityContextHolder.clearContext();
+            ErrorResponse errorResponse = new ErrorResponse(ex.getHttpStatus().value(), ex.getMessage());
+            response.setContentType("application/json");
+            response.setStatus(ex.getHttpStatus().value());
+
+            ObjectMapper objectMapper = new ObjectMapper();
+            String jsonString = objectMapper.writeValueAsString(errorResponse);
+            // Jackson ObjectMapper
+            PrintWriter out = response.getWriter();
+            out.print(jsonString);
+            out.flush();
+            return;
         }
 
         filterChain.doFilter(request,response);

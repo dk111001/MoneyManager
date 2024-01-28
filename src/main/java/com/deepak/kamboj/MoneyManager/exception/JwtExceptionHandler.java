@@ -8,24 +8,36 @@ import org.springframework.security.authentication.AuthenticationCredentialsNotF
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 import javax.naming.AuthenticationException;
 import java.security.SignatureException;
 
-@RestControllerAdvice
-public class JwtExceptionHandler {
+@ControllerAdvice
+public class JwtExceptionHandler{
 
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<String> handleJwtExceptions(AuthenticationException e) {
+    @ExceptionHandler(MalformedJwtException.class)
+    public ResponseEntity<?> handleJwtExceptions(AuthenticationException e) {
         // Handle JWT-related exceptions here
-        System.out.println("YYYYY");
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("JWT token is invalid or has expired");
     }
 
     @ExceptionHandler(AuthenticationCredentialsNotFoundException.class)
-    public ResponseEntity<String> handleAuthenticationCredentialsNotFoundException(AuthenticationCredentialsNotFoundException e) {
+    public ResponseEntity<?> handleAuthenticationCredentialsNotFoundException(AuthenticationCredentialsNotFoundException e) {
         // Handle cases where JWT token is missing
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("JWT token is missing");
+    }
+
+    @ExceptionHandler(CustomException.class)
+    public ResponseEntity<?> handleCustomExceptions(AuthenticationException e) {
+        // Handle JWT-related exceptions here
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("JWT token is invalid or has expired");
+    }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<?> handleExceptions(AuthenticationException e) {
+        // Handle JWT-related exceptions here
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("JWT token is invalid or has expired");
     }
 
     // Add more exception handlers for other JWT-related errors as needed

@@ -8,6 +8,7 @@ import lombok.Setter;
 @Getter
 @Setter
 public class User extends BaseModel {
+    @Column(unique = true)
     private String userName;
     private String password;
     private boolean active;

@@ -1,4 +1,4 @@
-package com.deepak.kamboj.MoneyManager.security;
+package com.deepak.kamboj.MoneyManager.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,7 +9,8 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class AuthRequest {
-    private String userName;
-    private String password;
+public class RequestResponse {
+    private int status;
+    private String message;
+    private Object data;
 }
